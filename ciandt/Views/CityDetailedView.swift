@@ -14,6 +14,7 @@ struct CityDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 
+ 
                 
                 
                 AsyncImage(url: URL(string: city.image)) { status in
@@ -28,6 +29,7 @@ struct CityDetailView: View {
                     } else if status.error != nil {
                         // se houver erro, vai exibir um retangulo cinza
                         Color.gray.frame(height: 200)
+                            .cornerRadius(20)
                     } else {
                         ProgressView().frame(height: 200)
                     }

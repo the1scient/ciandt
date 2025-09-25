@@ -15,7 +15,7 @@ class CityListViewModel: ObservableObject {
 
     private let repository: CityRepositoryProtocol
 
-    init(repository: CityRepositoryProtocol = CityRepository() as! CityRepositoryProtocol) {
+    init(repository: CityRepositoryProtocol = CityRepository()) {
         self.repository = repository
     }
 

@@ -8,54 +8,49 @@
 import SwiftUI
 
 struct CityListView: View {
-    @State private var cities: [City] = []
+    @StateObject private var viewModel = CityListViewModel()
     
     var body: some View {
         NavigationStack {
-            List(cities, id: \.id) { city in
-                NavigationLink(value: city) {
-                    HStack {
-                        AsyncImage(url: URL(string: city.icon)) { status in
-                            
-                            if let img = status.image {
-                                img
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
+            Group {
+                if viewModel.isLoading {
+                    ProgressView("Carregando locais 😄 ...")
+                } else if let error = viewModel.errorMessage {
+                    Text(error)
+                } else {
+                    List(viewModel.cities, id: \.id) { city in
+                        NavigationLink(value: city) {
+                            HStack(spacing: 8) {
+                                AsyncImage(url: URL(string: city.icon)) { status in
+                                    if let image = status.image {
+                                        image
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 40, height: 40)
+                                            .cornerRadius(8)
+                                    } else {
+                                        Color.gray.frame(width: 40, height: 40)
+                                    }
+                                }
                                 
-                               
-                                
+                                Text(city.name)
+                                  
                             }
-                            
                         }
-                        
-                        Text(city.name)
-                            
-                            
                     }
-                  
                 }
             }
             .navigationDestination(for: City.self) { city in
                 CityDetailView(city: city)
             }
             .navigationTitle("Locais em São Paulo")
-            .task {
-                await loadCities()
-            }
         }
-    }
-    
-    private func loadCities() async {
-        do {
-            let url = URL(string: "https://snappystudio.com.br/collections/city/1")!
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let decoded = try JSONDecoder().decode([City].self, from: data)
-            cities = decoded
-        } catch {
-            print("Erro ao carregar cidades: \(error)")
+        .task {
+            await viewModel.fetchCities()
         }
     }
 }
+
 
 #Preview() {
     CityListView()
