@@ -14,7 +14,25 @@ struct CityListView: View {
         NavigationStack {
             List(cities, id: \.id) { city in
                 NavigationLink(value: city) {
-                    Text(city.name)
+                    HStack {
+                        AsyncImage(url: URL(string: city.icon)) { status in
+                            
+                            if let img = status.image {
+                                img
+                                    .resizable()
+                                    .frame(width: 40, height: 40)
+                                
+                               
+                                
+                            }
+                            
+                        }
+                        
+                        Text(city.name)
+                            
+                            
+                    }
+                  
                 }
             }
             .navigationDestination(for: City.self) { city in
@@ -37,4 +55,8 @@ struct CityListView: View {
             print("Erro ao carregar cidades: \(error)")
         }
     }
+}
+
+#Preview() {
+    CityListView()
 }
