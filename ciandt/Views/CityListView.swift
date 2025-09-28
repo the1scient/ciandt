@@ -37,6 +37,7 @@ struct CityListView: View {
                                   
                             }
                         }
+                        .accessibilityIdentifier("local_\(city.id)") 
                     }
                 }
             }

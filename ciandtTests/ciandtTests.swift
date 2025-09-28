@@ -1,35 +1,55 @@
-//
-//  ciandtTests.swift
-//  ciandtTests
-//
-//  Created by GUILHERME FAGGION FABBRI on 25/09/25.
-//
-
 import XCTest
 
-final class ciandtTests: XCTestCase {
+@testable import ciandt
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
+@MainActor
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        measure {
-            // Put the code you want to measure the time of here.
+final class CityListViewModelTests: XCTestCase {
+    
+    // Mock repository
+    
+    class MockCityRepository: CityRepositoryProtocol {
+        var shouldFail = false
+        func fetchCities() async throws -> [City] {
+            
+            if shouldFail {
+                throw URLError(.badServerResponse)
+            } else {
+                return [ City(id: 1, version: 1, name: "Mock City", description: "Desc", image: "", latitude: 0, longitude: 0, color: "", icon: "", tasksCount: 0) ]
+            }
         }
     }
-
+    
+    func testFetchCitiesSuccess() async {
+        let mockRepo = MockCityRepository()
+        
+        let viewModel = CityListViewModel(repository: mockRepo)
+        
+        await viewModel.fetchCities()
+        
+        XCTAssertEqual(viewModel.cities.count, 1)
+        
+        XCTAssertNil(viewModel.errorMessage)
+        
+        XCTAssertFalse(viewModel.isLoading)
+        
+    }
+    
+    func testFetchCitiesFailure() async {
+        
+        let mockRepo = MockCityRepository()
+        
+        mockRepo.shouldFail = true
+        
+        let viewModel = CityListViewModel(repository: mockRepo)
+        
+        await viewModel.fetchCities()
+        
+        XCTAssertEqual(viewModel.cities.count, 0)
+        
+        XCTAssertEqual(viewModel.errorMessage, "Erro ao carregar cidades.")
+        
+        XCTAssertFalse(viewModel.isLoading)
+    }
+    
 }

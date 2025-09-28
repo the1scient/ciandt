@@ -28,5 +28,6 @@ class CityListViewModel: ObservableObject {
             errorMessage = "Erro ao carregar cidades."
         }
         isLoading = false
+        print("DEBUG - Cities carregadas: \(cities.map { "\($0.id): \($0.name)" })")
     }
 }

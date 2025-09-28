@@ -40,6 +40,7 @@ struct CityDetailView: View {
                     .font(.largeTitle)
                     .foregroundStyle(Color(hex: "\(city.color)"))
                     .bold()
+                    .accessibilityIdentifier("cityDetailTitle")
                 
                 //        if let description = city.description {
                 //    Text(description)
